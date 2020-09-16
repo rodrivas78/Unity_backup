@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +11,8 @@ public class LEFT_controller : MonoBehaviour {
 	bool forceSelection;
 	public int cameraButtonOn; 
 	public FollowingPlayer referenceFloat;
+	//*NEW*//  
+	public int newDirection;
 
 	void Start () {
 		rb = GetComponent<Rigidbody>();
@@ -20,11 +22,28 @@ public class LEFT_controller : MonoBehaviour {
 	public void OnPress(){
 
 		if (cameraButtonOn == 0) {
-		speed = 2.0f;
-		horizontalMove = -2.0f;
-		Vector3 movement = new Vector3 (horizontalMove, 0.0f, verticalMove);
-		rb.AddForce (movement * speed);
-		forceSelection = true; //Mantém a aceleração dentro do loop
+
+			speed = 2.0f;
+			Vector3 movement = new Vector3 (horizontalMove, 0.0f, verticalMove);
+			rb.AddForce (movement * speed);
+			forceSelection = true;
+		
+			switch (newDirection) {
+			case 0:  //L				
+				horizontalMove = -2.0f;			
+				break;
+			case 1:  //U
+				verticalMove = 2.0f;
+				break;
+			case 2:  //R				
+				horizontalMove = 2.0f;
+				break;
+			case 3:  //D 
+				verticalMove = -2.0f;
+				break;
+
+			}
+
 		}else {
 			referenceFloat.horizontalFloat = -0.5f; //Entra com a intensidade giro da camera em Following Player
 			//enquanto não efetua acelerações na esfera
@@ -35,6 +54,7 @@ public class LEFT_controller : MonoBehaviour {
 
 		speed = 0;
 		horizontalMove = 0.0f;
+		verticalMove = 0.0f; //NEW
 		Vector3 movement = new Vector3 (horizontalMove, 0.0f, verticalMove);
 		rb.AddForce (movement * speed);
 		forceSelection = false;
@@ -43,9 +63,25 @@ public class LEFT_controller : MonoBehaviour {
 
 	public void AddForce_LEFT()
 	{		
-		horizontalMove = -8.0f;
+
 		Vector3 movement = new Vector3 (horizontalMove, 0.0f, verticalMove);
-		rb.AddForce (movement * speed);
+		rb.AddForce (movement * speed);	
+		
+		switch (newDirection) {
+		case 0:  //L
+			horizontalMove = -8.0f;				
+			break;
+		case 1:  //U
+			verticalMove = 8.0f;
+			break;
+		case 2:  //R
+			horizontalMove = 8.0f;		
+			break;
+		case 3:  //D 
+			verticalMove = -8.0f;
+			break;
+
+		}
 	}
 
 	void FixedUpdate () {

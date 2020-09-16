@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class FollowingPlayer : MonoBehaviour
@@ -22,7 +22,7 @@ public class FollowingPlayer : MonoBehaviour
 	public float horizontalFloat;
 		
 	private Transform playerPosition;
-	private Transform cubeRotation;
+	//private Transform cubeRotation;
 	private Transform cameraPosition;
 
 	private float fValue;
@@ -30,39 +30,89 @@ public class FollowingPlayer : MonoBehaviour
 	//float vect = -70.0f;
 	public float playerVelocity = 0.8f;
 	public float rotationSpeed = 70f;
-	public float constantValue = 2.0f;
 
 	//private float cameraAngle = 0;
 	public GameObject reference;
 	public Vector3 rotationAxis;
 	Vector3 direction;
 
-	private float target;
+	private float cameraAngle = 0;
+	private float cameraTemp;
+	private bool complete;
 
+	//*NEW*//
+	private UP_controller direction_UP; 
+	private RIGHT_controller direction_RIGHT;
+	private DOWN_controller direction_DOWN;
+	private LEFT_controller direction_LEFT;
 
 	
 	void Start()
 	{
 		playerPosition = GameObject.Find("Sphere").transform;
+
+		direction_UP = GameObject.Find("Sphere").GetComponent<UP_controller>();  //0
+		direction_RIGHT = GameObject.Find("Sphere").GetComponent<RIGHT_controller>(); //1
+		direction_DOWN = GameObject.Find("Sphere").GetComponent<DOWN_controller>(); //2
+		direction_LEFT = GameObject.Find("Sphere").GetComponent<LEFT_controller>();  //3
+
 		direction = transform.position - reference.transform.position;	
+
+		complete = true;
 
 	}
 
-	/*
+
 	//Esta função mostra que o foi o botão "forward" que foi presssionado.
 	public void RotateLeft(){
-		//forwardPressed = true;
-		cameraAngle = cameraAngle - 90.0f;
-		target = cameraAngle;
+		
+		if (complete) {
+			cameraTemp = cameraAngle - 90.0f;
 
+			direction_UP.newDirection--;
+		if (direction_UP.newDirection == -1) 
+				direction_UP.newDirection = 3; 	
+			direction_UP.newDirection =direction_UP.newDirection % 4;
+
+			direction_RIGHT.newDirection--;
+			if (direction_RIGHT.newDirection == -1) 
+				direction_RIGHT.newDirection = 3; 	
+			direction_RIGHT.newDirection =direction_RIGHT.newDirection % 4;
+
+			direction_DOWN.newDirection--;
+			if (direction_DOWN.newDirection == -1) 
+				direction_DOWN.newDirection = 3; 	
+			direction_DOWN.newDirection =direction_DOWN.newDirection % 4;
+
+			direction_LEFT.newDirection--;
+			if (direction_LEFT.newDirection == -1) 
+				direction_LEFT.newDirection = 3; 	
+			direction_LEFT.newDirection =direction_LEFT.newDirection % 4;
+
+			//Debug.Log ("direction_UP.newDirection " + direction_UP.newDirection);
+		}
 	}
 
 	public void RotateRight(){
-		//forwardPressed = true;
-		cameraAngle = cameraAngle + 90.0f;
-		//target = cameraAngle;
+		
+		if (complete) {
+			cameraTemp = cameraAngle + 90.0f;
+
+			direction_UP.newDirection++;
+			direction_UP.newDirection =direction_UP.newDirection % 4;
+
+			direction_RIGHT.newDirection++;
+			direction_RIGHT.newDirection =direction_RIGHT.newDirection % 4;
+
+			direction_DOWN.newDirection++;
+			direction_DOWN.newDirection =direction_DOWN.newDirection % 4;
+
+			direction_LEFT.newDirection++;
+			direction_LEFT.newDirection =direction_LEFT.newDirection % 4;
+
+		}
 	}
-	*/
+
 
 
 	void LateUpdate() 
@@ -71,15 +121,10 @@ public class FollowingPlayer : MonoBehaviour
 
 		////float playerRotate = Input.GetAxis("Horizontal") * rotationSpeed * Time.smoothDeltaTime;
 		//transform.Rotate(0, playerRotate, 0);
-		////float playerMove = Input.GetAxis("Vertical") * -rotationSpeed * Time.smoothDeltaTime;
-
+		////float playerMove = Input.GetAxis("Vertical") * -rotationSpeed * Time.smoothDeltaTime;	
 	
-
-		////float playerRotate = constantValue * rotationSpeed * Time.smoothDeltaTime;
-		////float playerMove = constantValue * -rotationSpeed * Time.smoothDeltaTime;
 		float playerRotate = horizontalFloat * rotationSpeed * Time.smoothDeltaTime;
 		float playerMove = verticalFloat * -rotationSpeed * Time.smoothDeltaTime;
-
 
 		//float playerRotate = Input.GetButton ("Forward") * rotationSpeed * Time.smoothDeltaTime;
 		/*
@@ -88,26 +133,6 @@ public class FollowingPlayer : MonoBehaviour
 			transform.Rotate(0, playerRotate, 0,Space.World);
 		}
        */
-
-		//transform.Translate(playerMove, 0, 0);
-		////transform.position = playerPosition.position + new Vector3(cameraX, cameraY, cameraZ);
-		////transform.LookAt (playerPosition);
-		//transform.position= cameraPosition.position + new Vector3(-6.06f,2.73f, -0.2f);
-		//target = 2.0f;
-		//fValue = Mathf.SmoothDamp(fValue,target,steeringVelocity,1.0f);
-		//fValue = Mathf.MoveTowards(0,cameraAngle, 90.0f);
-		//fValue = Mathf.MoveTowards(0,cameraAngle, 5.0f);
-
-		//fValue = Mathf.MoveTowardsAngle (target, cameraAngle, 90.0f);
-
-		//Quaternion rot = Quaternion.AngleAxis(cameraAngle, Vector3.up);
-		/*
-		Quaternion rot = Quaternion.AngleAxis(cameraAngle, Vector3.up);
-		transform.position = reference.transform.position + new Vector3(0.0f,2.0f, -2.0f) + rot * direction;
-		transform.localRotation = rot;
-		transform.Rotate (15.0f, 0, 0, Space.Self);
-		Debug.Log("cameraAngle" + fValue);
-        */
 
 		//Alterna o tipo de movimentação da camera
 		if (integerToChange==1) {	
@@ -118,53 +143,32 @@ public class FollowingPlayer : MonoBehaviour
 
 			} else {
 				transform.Rotate (0, 0, 0, Space.Self);
-				//transform.Rotate (0, 0, 0, Space.Self);
+
 			}
-			//transform.RotateAround (Vector3.zero, Vector3.up, 2 * Time.deltaTime);
-			//transform.Rotate (0, playerRotate, 0);
-			//transform.Translate (0, -4, 0);
 
 		} else if(integerToChange==0){
-			transform.position = playerPosition.position + new Vector3(cameraX, cameraY, cameraZ);
-			//transform.position = playerPosition.position + rot * direction;
+			
+			//Controle de Steering
+			fValue = Mathf.MoveTowardsAngle (cameraAngle, cameraTemp, 5.0f);	
+			Quaternion rot = Quaternion.AngleAxis(fValue, Vector3.up);
+			transform.position = playerPosition.transform.position + new Vector3(0.0f,0.0f, 0.0f) + rot * direction;
+			transform.localRotation = rot;
+			//transform.Rotate (15.0f, 0, 0, Space.World);
 			transform.LookAt (playerPosition);
+
+			cameraAngle = fValue;
+			 //Condicional para barrar funcionalidade dos botões Rotate caso o giro ainda não esteja completo
+			if (fValue != cameraTemp) {
+				complete = false;
+			} else {
+				complete = true;
+				//Aqui envia o sinal de troca dos controles
+			}
 		}
 		//criar else que com um OR que também considere a queda da bola fora da plataforma ou ainda quando tocar no totem
 		else if (integerToChange == 2) {
 			transform.LookAt (playerPosition);
 		}
-
-
-		/*
-		if (integerToChange == 2) {
-			transform.LookAt (playerPosition);
-		}
-        */
-		/*
-		if (integerToChange==1) {
-
-			transform.LookAt (playerPosition);
-			//transform.position = playerPosition.position + new Vector3(cameraDistance, cameraHeight, cameraAxis);
-			//transform.LookAt(playerPosition);
-			//transform.RotateAround (Vector3.zero, Vector3.up, 2 * Time.deltaTime); //Variar entre 2 e 10
-			//transform.Rotate(0, 90, 0);
-			//transform.position = cameraPosition.position + new Vector3(-6.06f,2.73f, -0.2f);
-			//transform.position = playerPosition.position + new Vector3(-6.06f,2.73f, -0.2f);
-		}
-		//if (transform.position.y >= -69.0f)    {
-			
-		//transform.position = playerPosition.position + new Vector3(cameraDistance, cameraHeight, cameraAxis);
-		   //transform.LookAt(playerPosition);
-			//transform.RotateAround (Vector3.zero, Vector3.up, 2 * Time.deltaTime);
-
-		//transform.Rotate(0, 10 * Time.deltaTime, 0);
-		//}
-		else {			
-		//transform.LookAt (playerPosition);
-			//transform.position = playerPosition.position + new Vector3(cameraDistance, cameraHeight, cameraAxis);
-
-		}
-		*/
 
 	}
 }
