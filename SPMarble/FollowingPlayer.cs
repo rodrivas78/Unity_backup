@@ -3,14 +3,14 @@ using System.Collections;
 
 public class FollowingPlayer : MonoBehaviour
 {
-	
+
 	//public float cameraX = 0.0f;
 	//public float cameraY = 13.0f;
 	//public float cameraZ = -5.0f;
 	public float cameraX;
 	public float cameraY;
 	public float cameraZ;
-   //bool forwardPressed;
+	//bool forwardPressed;
 	//bool cameraActivated;
 
 	//Estas variáveis são alteradas pela pressionamento do botão (camera) 
@@ -20,7 +20,7 @@ public class FollowingPlayer : MonoBehaviour
 
 	public float verticalFloat;
 	public float horizontalFloat;
-		
+
 	private Transform playerPosition;
 	//private Transform cubeRotation;
 	private Transform cameraPosition;
@@ -33,7 +33,7 @@ public class FollowingPlayer : MonoBehaviour
 
 	//private float cameraAngle = 0;
 	public GameObject reference;
-	public Vector3 rotationAxis;
+	//public Vector3 rotationAxis;
 	Vector3 direction;
 
 	private float cameraAngle = 0;
@@ -46,7 +46,9 @@ public class FollowingPlayer : MonoBehaviour
 	private DOWN_controller direction_DOWN;
 	private LEFT_controller direction_LEFT;
 
-	
+	public float alturaCamera;
+
+
 	void Start()
 	{
 		playerPosition = GameObject.Find("Sphere").transform;
@@ -65,36 +67,32 @@ public class FollowingPlayer : MonoBehaviour
 
 	//Esta função mostra que o foi o botão "forward" que foi presssionado.
 	public void RotateLeft(){
-		
+
 		if (complete) {
+			
 			cameraTemp = cameraAngle - 90.0f;
 
 			direction_UP.newDirection--;
-		if (direction_UP.newDirection == -1) 
-				direction_UP.newDirection = 3; 	
-			direction_UP.newDirection =direction_UP.newDirection % 4;
+			if (direction_UP.newDirection < 0) 
+				direction_UP.newDirection = 3; 			
 
 			direction_RIGHT.newDirection--;
-			if (direction_RIGHT.newDirection == -1) 
-				direction_RIGHT.newDirection = 3; 	
-			direction_RIGHT.newDirection =direction_RIGHT.newDirection % 4;
+			if (direction_RIGHT.newDirection < 0) 
+				direction_RIGHT.newDirection = 3; 				
 
 			direction_DOWN.newDirection--;
-			if (direction_DOWN.newDirection == -1) 
-				direction_DOWN.newDirection = 3; 	
-			direction_DOWN.newDirection =direction_DOWN.newDirection % 4;
+			if (direction_DOWN.newDirection < 0) 
+				direction_DOWN.newDirection = 3; 				
 
 			direction_LEFT.newDirection--;
-			if (direction_LEFT.newDirection == -1) 
-				direction_LEFT.newDirection = 3; 	
-			direction_LEFT.newDirection =direction_LEFT.newDirection % 4;
+			if (direction_LEFT.newDirection < 0) 
+				direction_LEFT.newDirection = 3; 			
 
-			//Debug.Log ("direction_UP.newDirection " + direction_UP.newDirection);
 		}
 	}
 
 	public void RotateRight(){
-		
+
 		if (complete) {
 			cameraTemp = cameraAngle + 90.0f;
 
@@ -122,7 +120,7 @@ public class FollowingPlayer : MonoBehaviour
 		////float playerRotate = Input.GetAxis("Horizontal") * rotationSpeed * Time.smoothDeltaTime;
 		//transform.Rotate(0, playerRotate, 0);
 		////float playerMove = Input.GetAxis("Vertical") * -rotationSpeed * Time.smoothDeltaTime;	
-	
+
 		float playerRotate = horizontalFloat * rotationSpeed * Time.smoothDeltaTime;
 		float playerMove = verticalFloat * -rotationSpeed * Time.smoothDeltaTime;
 
@@ -147,17 +145,18 @@ public class FollowingPlayer : MonoBehaviour
 			}
 
 		} else if(integerToChange==0){
-			
+
 			//Controle de Steering
 			fValue = Mathf.MoveTowardsAngle (cameraAngle, cameraTemp, 5.0f);	
 			Quaternion rot = Quaternion.AngleAxis(fValue, Vector3.up);
-			transform.position = playerPosition.transform.position + new Vector3(0.0f,0.0f, 0.0f) + rot * direction;
+			transform.position = playerPosition.transform.position + new Vector3(0.0f, alturaCamera, 0.0f) + rot * direction;
 			transform.localRotation = rot;
 			//transform.Rotate (15.0f, 0, 0, Space.World);
+			//transform.Rotate (30.0f, 0, 0, Space.Self);
 			transform.LookAt (playerPosition);
 
 			cameraAngle = fValue;
-			 //Condicional para barrar funcionalidade dos botões Rotate caso o giro ainda não esteja completo
+			//Condicional para barrar funcionalidade dos botões Rotate caso o giro ainda não esteja completo
 			if (fValue != cameraTemp) {
 				complete = false;
 			} else {
